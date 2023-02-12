@@ -1,0 +1,15 @@
+.highlight {
+    color: red;
+}
+
+#row-display {
+    margin: auto;
+    width: 90%;
+    height: 50vh;
+    display: grid;
+    grid-template-columns: 1fr 9fr;
+}
+
+#completed1 {
+    background-color: blue;
+}

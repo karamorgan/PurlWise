@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Build Pattern</h1>
+    <div id="add-stitches">
+        <label> Stitch Type: 
+            <select name="stitchType" id="stitch-type-select">
+                <option value="">--Select--</option>
+                <option value="K">Knit</option>
+                <option value="P">Purl</option>
+            </select>
+        </label>
+        <label># of stitches: <input type="number" name="stitchNum" id="stitch-num"></label>
+        <button id="add-stitches-btn">Add Stitches</button>
+    </div>
+    <div id="row-build-div">
+        <ul id="row-build-list"></ul>
+        <p>Check boxes of stitches to add to a repeating group, then specify instances of repetition. Repeat groups cannot overlap</p>
+        <p>To add another row, click "Next Row"</p>
+        <input type="number" id="repeat-num" min="2" value="2">
+        <button id="repeat-group-btn">Add Repeat Group</button>
+    </div>
+    <div id="row-display-div">
+        <button id="next-row-btn">Next Row</button>
+    </div>
+    <div id="row-group-build-div">
+        <ul id="row-group-build-list"></ul>
+    </div>
+    <a href="/display/" id="pattern-display-link">Let's Go!</a>
+    <script src="/../javascript/patternConstruct.js"></script>
+</body>
+</html>
+

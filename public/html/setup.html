@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup</title>
+</head>
+<body>
+    <h1>Setup</h1>
+    <form action="/setup" method="POST">
+        <label for="pattern-name-input">Pattern Name:</label>
+        <input type="text" name="name" id="pattern-name-input">
+        <label for="pattern-description-input">Description: (optional)</label>
+        <input type="text" name="description" id="pattern-description-input">
+        <fieldset id="needle-type-select">
+            <legend>Knitting Type:</legend>
+            <div>
+                <input type="radio" id="flat" name="needleType" value="flat">
+                <label for="flat">Flat</label>
+            </div>
+            <div>
+                <input type="radio" id="round" name="needleType" value="round">
+                <label for="round">In The Round</label>
+            </div>
+        </fieldset>
+        <select name="needleSize" id="needle-size-select">
+            <option value="">Needle Size</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select>
+        <label># of Cast-on Stitches: <input type="number" name="castOn" id="cast-on-num"></label>
+        <input type="submit" value="next">
+    </form>
+    
+</body>
+</html>

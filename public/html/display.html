@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/../css/displayStyles.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Pattern Display</h1>
+    <p id="stitch-display"></p>
+    <div id="row-display">
+        <label>Forthcoming:</label>
+        <div id="forthcoming" class="display-div">
+            <div></div>
+        </div>
+        <label>Current:</label>
+        <div id="current" class="display-div">
+            <div></div>
+        </div>
+        <label>Completed</label>
+        <div id="completed" class="display-div">
+            <div></div>
+        </div>
+    </div>
+    <button id="forward">Next Stitch</button>
+    <button id="backward">Previous Stitch</button>
+    <label> Advance Increment: 
+        <label for="stitch-radio">Stitch</label>
+        <input type="radio" id="stitch-radio" name="advance-type" value="4" checked>
+        <label for="stitch-group-radio">Stitch Group</label>
+        <input type="radio" id="stitch-group-radio" name="advance-type" value="3">
+        <label for="row-radio">Row</label>
+        <input type="radio" id="row-radio" name="advance-type" value="1">
+    </label>
+    <script src="/../javascript/displayConstruct.js"></script>
+</body>
+</html>
