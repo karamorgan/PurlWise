@@ -195,7 +195,7 @@ advIncRadios.forEach(radio => {
     radio.addEventListener('click', getAdvInc);
 });
 
-// General purpose http request function for retrieving or sending any data from/to the database
+// General purpose http request function for any backend communication
 function data(type, route, body) {
     return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();

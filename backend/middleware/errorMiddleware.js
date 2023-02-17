@@ -1,4 +1,5 @@
 const errorHandler = (err, req, res, next) => {
+    console.log('server-side error');
     console.log(err.message);
     console.log(err.stack);
     // const statusCode = res.statusCode ? res.statusCode : 500;

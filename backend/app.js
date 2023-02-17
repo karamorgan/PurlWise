@@ -20,7 +20,10 @@ app.use('/setup', require('./routes/setupRoute'));
 app.use('/pattern', require('./routes/patternRoute'));
 app.use('/display', require('./routes/displayRoute'));
 
+app.use('*', function(req, res, next) {
+    next(new Error('No route found'));
+});
+
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}...`));
-

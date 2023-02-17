@@ -7,6 +7,8 @@ const groupRepeatBtn = document.getElementById('repeat-group-btn');
 const nextRowBtn = document.getElementById('next-row-btn');
 let rowGroupBuildList = document.getElementById('row-group-build-list');
 const displayLink = document.getElementById('pattern-display-link');
+const deleteContentsBtn = document.getElementById('delete-contents-btn');
+const deletePatternBtn = document.getElementById('delete-pattern-btn');
 
 // Restructure later to avoid using global variables
 const setupID = window.location.pathname.split('/').pop();
@@ -18,7 +20,7 @@ let displays = {
 // Initializes displays and adds event listeners
 (function() {
     displayLink.href += setupID;
-    updateDisplays('GET', 'display', null, 'failed to build displays');
+    updateDisplays('GET', '/pattern/display', null, 'failed to build displays');
     eventListeners();
 })();
 
@@ -34,12 +36,16 @@ function updateDisplays(type, route, body, errorMsg) {
 // Need to separate this function by row and row group to avoid unnecessary calls to database when row group doesn't change
 // Also consider how we might just add individual DOM elements one at a time instead of rebuilding entire list each time
 function buildDisplays(newDisplays) {
-    if(newDisplays) displays = newDisplays;
     rowBuildList.innerHTML = '';
     rowGroupBuildList.innerHTML = '';
 
-    data('GET', 'data', null, displays.row).then(addRowListItems);
-    data('GET', 'data', null, displays.rowGroup).then(addRowGroupListItems);
+    if(newDisplays) {
+        displays = newDisplays;
+        return Promise.all([
+            data('GET', '/pattern/data', null, displays.row).then(addRowListItems),
+            data('GET', '/pattern/data', null, displays.rowGroup).then(addRowGroupListItems)
+        ]);
+    }
 };
 
 // Creates DOM elements to represent each stitch in a row as a list
@@ -87,26 +93,37 @@ function eventListeners() {
 
     groupRepeatBtn.addEventListener('click', groupRepeat);
 
-    nextRowBtn.addEventListener('click', () => {
+    nextRowBtn.addEventListener('click', (event) => {
         displays.row = null;
         rowBuildList.innerHTML = '';
     });
+
+    deleteContentsBtn.addEventListener('click', deleteContents);
+
+    deletePatternBtn.addEventListener('click', deletePattern);
 };
 
 // Manipulates the data tree at the database by splitting existing groups of stitches into smaller repeat groups
 // This allows us to store fewer documents to represent repetitive data, instead of adding each stitch individually
-function groupRepeat() {
-    let checked = document.querySelectorAll('input[type="checkbox"]:checked');
-    let checkedData = JSON.stringify( {
-        first: checked[0].id, 
-        last: checked[checked.length - 1].id,
-        instances: repeatNum.value
-    }); // Later add logic to require values for both
-
-    updateDisplays('POST', 'split', checkedData);
+function groupRepeat(event) {
+    try {
+        let checked = document.querySelectorAll('input[type="checkbox"]:checked');
+        
+        if(checked.length) {
+            let checkedData = JSON.stringify( {
+                first: checked[0].id, 
+                last: checked[checked.length - 1].id,
+                instances: repeatNum.value
+            }); // Later add logic to require values for both
+        
+            updateDisplays('POST', '/pattern/split', checkedData);
+        } else throw new Error('no repeat boxes checked');
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-function addStitches() {
+function addStitches(event) {
     let stitches = {    // Make these fields required
         data: stitchTypeInput.value,
         instances: parseInt(stitchNumInput.value)
@@ -115,8 +132,24 @@ function addStitches() {
     // Specifies where to add the stitches in the data tree by sending the active display identifiers
     let stitchData = JSON.stringify({ stitches: stitches, displays: displays });
 
-    updateDisplays('POST', 'add', stitchData);
+    updateDisplays('POST', '/pattern/add', stitchData, 'failed to add stitches');
 };
+
+// Returns to function if called from deletePattern
+function deleteContents(event) {
+    updateDisplays('DELETE', '/pattern/data' , null, 'failed to delete pattern contents');
+}
+
+async function deletePattern(event) {
+    try {
+        await data('DELETE', '/pattern/data');
+        await data('DELETE', '/setup/data');
+        window.location.replace('/dashboard');
+    } catch (error) {
+        console.log('failed to delete pattern setup');
+        console.log(error);
+    }
+}
 
 // Need to access these across multiple different event listeners, but shouldn't use global variables
 // Maybe convert checkboxes to instances of constructor later?
@@ -150,17 +183,22 @@ function fillBoxes() {
     }
 };
 
-// General purpose http request function for retrieving or sending any data from/to the database
+// General purpose http request function for any backend communication
 function data(type, route, body, patternID) {
+    console.log('here')
     return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();
-        xhttp.open(type, ['/pattern', route, setupID, patternID].join('/'), true);
+        xhttp.open(type, [route, setupID, patternID].join('/'), true);
         xhttp.onload = function() {
-            let response = this.response;
-            if(this.status === 200) {
-                console.log(response.message);
-                resolve(response.data);
-            } else reject(response);
+            try {
+                let response = this.response;
+                if(this.status === 200) {
+                    console.log(response.message);
+                    resolve(response.data);
+                } else throw response;
+            } catch (error) {
+                reject(error);
+            }
         }
         xhttp.setRequestHeader('Content-Type', 'application/json');
         xhttp.responseType = 'json';

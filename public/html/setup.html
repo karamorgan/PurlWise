@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Setup</h1>
-    <form action="/setup" method="POST">
+    <form id="setup-form">
         <label for="pattern-name-input">Pattern Name:</label>
         <input type="text" name="name" id="pattern-name-input">
         <label for="pattern-description-input">Description: (optional)</label>
@@ -37,8 +37,8 @@
             <option value="10">10</option>
         </select>
         <label># of Cast-on Stitches: <input type="number" name="castOn" id="cast-on-num"></label>
-        <input type="submit" value="next">
+        <input type="submit" value="Create Pattern">
     </form>
-    
+    <script src="/../javascript/setup.js"></script>
 </body>
 </html>

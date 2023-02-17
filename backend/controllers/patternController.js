@@ -8,6 +8,7 @@ const tree = {
     findData: async function(id) {
         try {
             let node = await Pattern.findById(id);
+            if(!node) throw new Error('no pattern data found');
 
             const item = {
                 id: node?._id,
@@ -30,16 +31,20 @@ const tree = {
     getBuildDisplays: async function(req, res, next) {
         try {
             let setup = await Setup.findById(req.params.setupID).populate('pattern');
+            if(!setup) throw new Error('no pattern setup found');
             let patternHead = setup.pattern;
-            let rowGroup = await Pattern.findById(patternHead?.children[patternHead.children.length - 1]);
-            let row = await Pattern.findById(rowGroup?.children[rowGroup.children.length - 1]);
+            if(!patternHead) res.send({ message: 'no build displays found' });
+            else {
+                let rowGroup = await Pattern.findById(patternHead.children[patternHead.children.length - 1]);
+                let row = await Pattern.findById(rowGroup.children[rowGroup.children.length - 1]);
 
-            let displays = {
-                rowGroup: rowGroup?._id,
-                row: row?._id
-            };
+                let displays = {
+                    rowGroup: rowGroup._id,
+                    row: row._id
+                };
 
-            res.json({ message: 'successfully retrieved build display data', data: displays });
+                res.json({ message: 'successfully retrieved build display data', data: displays });
+            }
         } catch (error) {
             next(error);
         }
@@ -50,9 +55,10 @@ const tree = {
     getData: async function(req, res, next) {
         try {
             let setup = await Setup.findById(req.params.setupID);
+            if(!setup) throw new Error('no pattern found');
+
             const id = req.params.patternID ?? setup.pattern;
-           
-            const result = await tree.findData(id);
+            const result = await tree.findData(id); // this?
             
             res.send({ message: 'successfully retrieved pattern data', data: result });
         } catch (error) {
@@ -94,7 +100,7 @@ const tree = {
             await rowGroup.save();
             await patternRoot.save();
 
-            res.send({ message: 'stitches successfully added', data: { rowGroup: rowGroup._id, row: row._id } });
+            res.send({ message: 'successfully added stitches', data: { rowGroup: rowGroup._id, row: row._id } });
         } catch (error) {
             next(error);
         }
@@ -110,6 +116,7 @@ const tree = {
 
             let stitchSeq = await Pattern.findOne({ children: first }); // Existing parent of checked data, i.e. stitch sequence
             let row = await Pattern.findOne({ children: stitchSeq }); 
+            let rowGroup = await Pattern.findOne({ children: row });
 
             // Add new stitch group split before repeat group only if there are other stitches before the first checked box
             if(!first.equals(stitchSeq.children[0])) {
@@ -147,7 +154,36 @@ const tree = {
             await stitchSeq.save();
             await row.save();
 
-            res.send({ message: 'sequences split successfully' });
+            res.send({ message: 'successfully split sequences', data: { rowGroup: rowGroup._id, row: row._id } });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    // Accepts pattern setup ID, traverses the pattern to create an array of IDs of every document contained
+    // Then deletes all corresponding documents from the database, and deletes progress and pattern head reference from setup
+    delete: async function(req, res, next) {
+        try {
+            let setup = await Setup.findById(req.params.setupID);
+            if(!setup) throw new Error('no pattern found');
+    
+            if(setup.pattern) {
+                let toDelete = await traverse(setup.pattern);
+                await Pattern.deleteMany({ _id: { $in: toDelete } });
+                setup.pattern = null;
+                setup.progress = 0;
+                setup.save();
+
+                async function traverse(rootID, arr = []) {
+                    let root = await Pattern.findById(rootID);
+                    for(const child of root.children) {
+                        arr = arr.concat(await traverse(child));
+                    }
+                    return arr.concat(root);
+                };
+    
+                res.send({ message: 'successfully deleted pattern contents' });
+            } else res.send({ message: 'no pattern contents to delete' });
         } catch (error) {
             next(error);
         }

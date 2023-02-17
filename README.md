@@ -15,14 +15,14 @@ Repetition in knitting patterns is usually layered: repeat a purl stitch 2 times
 
 PurlWise stores repetitive data with the minimum documents necessary to represent each pattern, so a complex project involving 60,000 stitches can be reduced to just a few dozen nodes in a tree. All nodes are stored in the database as first-class citizens with ObjectID references to their immediate descendent documents, making searching and updating the data structure simple at any level. 
 
-PurlWise serves pattern data to the display incrementally as cued by the user. It allows you to change the increment of advance and to reverse direction as necessary. Progress udates to the database are idempotent and occur at every increment, so progress is accurately tracked without having to save manually, even when communication to the backend is interrupted.
+PurlWise serves pattern data to the display incrementally as cued by the user. It allows you to change the increment of advance and to reverse direction as desired. Progress udates to the database are idempotent and occur at every increment, so progress is accurately tracked without having to save manually, even when communication to the backend is interrupted.
 
 In a future update, PurlWise will support user profiles, authenticated with JSON web tokens, allowing users to store multiple patterns at varying levels of progress.
 
 ---
 
 ## Status
-**PurlWise is a work in progress.** It is currently a minimum viable product, so you can use it at its base functionality, but it is missing some major features. All frontend development has thus far been limited to delivering data to the user, so there is no UI design beyond the minimum HTML. At this stage, users may input patterns and progress through them on the display by clicking at their increment of choice. Future versions will support a spacebar tap or foot pedal input.
+**PurlWise is a work in progress.** It is currently a minimum viable product, so you can use it at its base functionality, but it is missing some major features. All frontend development has thus far been limited to delivering data to the user, so there is no UI design beyond the minimum HTML. At this stage, users may input a pattern and progress through it on the display by clicking at their increment of choice. Future versions will support a spacebar tap or foot pedal input.
 
 ---
 
@@ -35,10 +35,13 @@ In a future update, PurlWise will support user profiles, authenticated with JSON
 ---
 
 ## Forward Work
-* Add edit/delete functionality to pattern setup page
+* Add edit functionality to pattern setup page
+* Add edit functionality to build pattern page
+* Prompt user for confirmation before deleting data
 * Revise frontend display code
     * Try to move as much code as possible to backend
     * Explore more opportunities for inheritance, encapsulation, polymorphism, abstraction?
+* Verify status codes are being used appropriately
 * Design and build the UI
 * Build user profile & authentication functionality on the backend
 * Build user dashboard with pattern previews

@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.route('/:setupID').get(servePattern);
 router.route('/display/:setupID').get(tree.getBuildDisplays);
-router.route('/data/:setupID/:patternID?').get(tree.getData);
+router.route('/data/:setupID/:patternID?').get(tree.getData).delete(tree.delete);
 router.route('/add/:setupID').post(tree.add);
 router.route('/split/:setupID').post(tree.split);
 
